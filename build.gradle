@@ -1,0 +1,37 @@
+allprojects {
+    task greet << {
+        println "Hello I am $project.name"
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    greet << {
+        println "... and I am a subproject of GradleDemos!\n"
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.11'
+    }
+}
+
+/* inject behavior into all builds by moving this into a init.d file */
+def LONG_TEST = 500
+
+gradle.projectsEvaluated { gradle ->
+    gradle.rootProject.allprojects {
+        tasks.withType(Test).each { test ->
+            test.afterTest { descr, result ->
+                def time = result.endTime - result.startTime
+                if(time >= LONG_TEST)
+                    logger.warn("WARNING: $descr.className is a long-running test. Please consider mocking its dependencies.")
+            }
+        }
+
+    }
+}

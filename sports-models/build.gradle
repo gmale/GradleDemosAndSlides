@@ -1,0 +1,44 @@
+dependencies {
+    compile 'com.google.guava:guava:14.0.1'
+}
+
+/* replace the 'tar' task with the Smarter version */
+task tar << {
+    ant.tar(destfile: 'archive.tar') {
+        fileset(dir: 'src') {
+            include(name: '**/*.java')
+            exclude(name: '**/*.xml')
+        }
+    }
+}
+
+/* this is now 'declarative' and less concerned with 'how' tarring is done */
+task smartTar(type: TarTask) {
+    tarSrc = file('src')
+    outputFile = new File("${buildDir}/archive/archive.tar")
+    outputDirectory = outputFile.parentFile
+}
+
+/* put the TarTask in an external jar then add that to the build */
+class TarTask extends DefaultTask {
+
+    @InputDirectory
+    File tarSrc
+
+    @OutputFile
+    File outputFile
+
+    /* use of output directory is optional but allows for better 'cleaning' */
+    @OutputDirectory
+    File outputDirectory
+
+    @TaskAction
+    void tarItUp() {
+        ant.tar(destfile: "$outputFile") {
+            fileset(dir: tarSrc) {
+                include(name: '**/*.java')
+                exclude(name: '**/*.xml')
+            }
+        }
+    }
+}
