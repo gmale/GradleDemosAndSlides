@@ -9,8 +9,8 @@ The easiest way to download everything is to run the following command in the *t
 
 ```bash
 
-$ git clone https://github.com/gmale/GradleDemosAndSlides.git
 
+$ git clone https://github.com/gmale/GradleDemosAndSlides.git
 
 ```
 
